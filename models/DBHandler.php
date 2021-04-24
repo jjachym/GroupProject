@@ -13,8 +13,8 @@ class DBHandler {
     }
 
     private function connect_database() {
-        define('USER', 'user');
-        define('PASSWORD', 'password');
+        define('USER', 'sgoperr2');
+        define('PASSWORD', 'IzzyPippa55');
 
         // Database connection
         try {
