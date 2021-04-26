@@ -32,9 +32,24 @@
 
         //authenticate users credentials
         public function authenticate($pwd){
-            $valid = false;
 
             //query db and check pwd
+
+            try{
+                $db = new DBHandler();
+                $pdo = $db->getInstance();
+
+                $sql = "SELECT userPassword FROM User WHERE userUsername = ?";
+
+                $auth = $pdo->prepare($sql);
+                $auth->execute([$this->username]);
+
+                $row = $auth->fetch();
+
+                print_r($row);
+            }catch(PDOException $e){
+                $valid = false;
+            }
             
 
             if($valid){
@@ -47,6 +62,28 @@
 
         //find user by unique username in the db
         public function find_user($username){
+
+            try{
+                $this->username = $username;
+    
+                $db = new DBHandler();
+                $pdo = $db->getInstance();
+    
+                $sql = "SELECT * FROM User WHERE userUsername = ?";
+    
+                $auth = $pdo->prepare($sql);
+                $auth->execute([$this->username]);
+    
+                $row = $auth->fetch();
+    
+                $this->firstName = $row['userFirstName'];
+                $this->lastName = $row['userLastName'];
+
+            }catch(PDOException $e){
+                return false;
+            }
+
+            return true;
 
         }
 
@@ -73,7 +110,7 @@
                 
                 while($check = $checkUsername->fetch()){
                     if($check['amount'] > 0){
-                        //errorHandler("Username is already taken. Please choose another");
+                        echo "Username is already taken. Please choose another";
                         return false;
                     }else{
                         $addUser = $pdo->prepare("insert into User (userFirstName, userLastName, userUsername, userPassword) values (:fName, :lName, :uName, :psw)");
@@ -91,7 +128,6 @@
 
                 return true;
             }catch (PDOException $e){
-                echo $e;
                 $pdo->rollBack();
                 return false;
             }

@@ -80,8 +80,6 @@
     if($username != "" && $Fname != "" && $Lname != "" && $psw != "" && $pswRepeat != ""){
       if(checkFirstName($Fname) && checkLastName($Lname) && checkUsername($username) && checkPassword($psw,$pswRepeat)){
 
-        echo "All inputs valid";
-
         $user = new User($username,$Fname,$Lname);
   
         $hash = password_hash($psw,PASSWORD_DEFAULT);
@@ -203,14 +201,14 @@
 
       <!--ADD THIS EMAIL TO USER TABLE-->
       <label for="username"><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="username" value="<?php if(isset($_SESSION['username'])){echo $_SESSION['username'];} ?> " required>
+      <input type="text" placeholder="Enter Username" name="username" value="<?php if(isset($_SESSION['username'])){echo $_SESSION['username'];} ?>" required>
       
       
       <label for="Fname"><b>First Name</b></label>
-      <input type="text" placeholder="Enter First Name" name="Fname" value="<?php if(isset($_SESSION['fname'])){echo $_SESSION['fname'];} ?> " required>
+      <input type="text" placeholder="Enter First Name" name="Fname" value="<?php if(isset($_SESSION['fname'])){echo $_SESSION['fname'];} ?>" required>
       
       <label for="Lname"><b>Last Name</b></label>
-      <input type="text" placeholder="Enter Last Name" name="Lname" value="<?php if(isset($_SESSION['lname'])){echo $_SESSION['lname'];} ?> " required>
+      <input type="text" placeholder="Enter Last Name" name="Lname" value="<?php if(isset($_SESSION['lname'])){echo $_SESSION['lname'];} ?>" required>
 
       <!--ADD THIS PASSWORD TO USER TABLE-->
       <label for="psw"><b>Password</b></label>
