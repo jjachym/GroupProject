@@ -22,12 +22,6 @@
             //$this->email = $email;
             $this->admin = $admin;
 
-            //save new user and retrieve id for that user
-            if($this->firstName != ""){
-
-                $this->authenticated = true;
-
-            }
         }
 
         //authenticate users credentials
@@ -78,6 +72,7 @@
     
                 $this->firstName = $row['userFirstName'];
                 $this->lastName = $row['userLastName'];
+                $this->id = $row['userID'];
 
             }catch(PDOException $e){
                 return false;
