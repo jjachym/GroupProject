@@ -25,7 +25,7 @@ class DBHandler {
             );
 
             $this->db = new PDO($connection_string, USER, PASSWORD, $connection_array);
-            echo 'Database connection established';
+            //echo 'Database connection established';
         }
         catch(PDOException $e) {
             $this->db = null;
