@@ -40,7 +40,10 @@
 
                 $row = $auth->fetch();
 
-                print_r($row);
+                if(password_verify($pwd,$row['userPassword'])){
+                    $valid = true;
+                }
+
             }catch(PDOException $e){
                 $valid = false;
             }
@@ -69,11 +72,14 @@
                 $auth->execute([$this->username]);
     
                 $row = $auth->fetch();
-    
-                $this->firstName = $row['userFirstName'];
-                $this->lastName = $row['userLastName'];
-                $this->id = $row['userID'];
 
+                if(isset($row['userID'])){
+                    $this->firstName = $row['userFirstName'];
+                    $this->lastName = $row['userLastName'];
+                    $this->id = $row['userID'];
+                }else{
+                    return false;
+                }
             }catch(PDOException $e){
                 return false;
             }
@@ -105,7 +111,7 @@
                 
                 while($check = $checkUsername->fetch()){
                     if($check['amount'] > 0){
-                        echo "Username is already taken. Please choose another";
+                        $_SESSION['errors'][] = "Username is already taken. Please choose another";
                         return false;
                     }else{
                         $addUser = $pdo->prepare("insert into User (userFirstName, userLastName, userUsername, userPassword) values (:fName, :lName, :uName, :psw)");

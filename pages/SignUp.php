@@ -1,28 +1,7 @@
 <?php
   session_start();
   require_once '../models/User.php';
-
-  //flash error messages
-
-  if (isset($_SESSION['errors'])){
-    foreach ($_SESSION['errors'] as $error) {
-        echo "<div class='error'> <p>",$error,"</p></div>";
-    }
-  }
-
-  if (isset($_SESSION['success']) && $_SESSION['success'] != ""){
-    echo "<div class='success'> <p>",$_SESSION['success'],"</p></div>";
-    $_SESSION['success'] = "";
-  }
-
-  //unset all errors
-
-  $_SESSION['errors'] = array();
-
-  //error handler
-  function errorHandler($message){
-    $_SESSION['errors'][] = $message;
-  }
+  include '../models/ErrorHandler.php';
 
   function checkFirstName($Fname){
     if(strlen($Fname) > 15){
@@ -87,8 +66,6 @@
         if($user->save($hash)){
           $_SESSION['success'] = "You have succesfully signed up";
           $_SESSION['user'] = $user;
-        }else{
-          errorHandler("Database error please try again later");
         }        
       }
     
@@ -97,6 +74,7 @@
     }
 
     header("Location: SignUp.php");
+    return;
   }
 
 ?>
@@ -172,24 +150,6 @@
       .cancelbtn, .signupbtn {
         width: 100%;
       }
-    }
-
-    .error{
-        width: 80%;
-        margin: auto;
-        padding: 10px;
-        background: red;
-        color: white;
-        font-family: Helvetica;
-    }
-
-    .success{
-        width: 80%;
-        margin: auto;
-        padding: 10px;
-        background: green;
-        color: white;
-        font-family: Helvetica;
     }
   </style>
 <body>

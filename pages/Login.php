@@ -1,3 +1,38 @@
+<?php
+  session_start();
+
+  require_once '../models/User.php';
+  include '../models/ErrorHandler.php';
+
+  if (isset($_POST['login'])) {
+    if (isset($_POST['username']) && isset($_POST['psw'])) {
+      $user = new User();
+
+      $_SESSION['username'] = $_POST['username'];
+
+      if($user->find_user($_POST['username'])){
+
+        if($user->authenticate($_POST['psw'])){
+          $_SESSION['user'] = $user;
+          $_SESSION['success'] = "You have successfully logged on!";
+        }else{
+          errorHandler("Incorrect password!");
+        }
+
+      }else{
+        errorHandler("Incorrect username!");
+      }
+
+    }
+
+    header("Location: Login.php");
+    return;
+  }
+
+
+
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -70,21 +105,21 @@
 
 <h2>Login To AI Foods</h2>
 
-<form action="/action_page.php" method="post">
+<form method="post">
   
 
   <div class="container">
 
     <!--CHECK THIS EMAIL IS IN USER TABLE-->
     <label for="username"><b>Username</b></label>
-    <input type="text" placeholder="Username" name="username" required>
+    <input type="text" placeholder="Username" name="username" value="<?php if(isset($_SESSION['username'])){echo $_SESSION['username'];} ?>" required>
 
     <!--CHECK THIS PASSWORD IS IN USER TABLE-->
     <label for="psw"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="psw" required>
       
     <!--WHEN PRESSED CHECK USER EMAIL AND PASSWORD AGAINST USER TABLE TO FIND MATCH, LOGIN IF MATCH FOUND-->
-    <button type="login">Login</button>
+    <button type="submit" name="login">Login</button>
   </div>
 
   <div class="container" style="background-color:#f1f1f1">
