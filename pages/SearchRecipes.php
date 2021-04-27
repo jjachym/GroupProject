@@ -82,7 +82,7 @@
         
         <iframe src="Master.html" width = "100%" height = "72" style="border:none;"></iframe>
         
-        <h1>Search our recipes</h1>
+        <h1>Search Our Recipes</h1>
         <p>Please fill out the relevant fields to search for a recipe, using either name, or ingredients, or both!</p>
 
         <hr>
