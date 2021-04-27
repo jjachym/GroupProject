@@ -11,7 +11,7 @@
 <body>
 
 <nav class="navbar navbar-inverse" style = "background-color: green;">
-  <div class="container-fluid">
+  <div class="container-full">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
         <span class="icon-bar"></span>
@@ -25,6 +25,7 @@
         <li><a href="#" style = "color: white;">Home</a></li>
         <li><a href="#" style = "color: white;">Search Recipe</a></li>
         <li><a href="#" style = "color: white;">Get Recommendation</a></li>
+        <li><a href="#" style = "color: white;">User Area</a></li>
         <li><a href="#" style = "color: white;">Sign Out</a></li>
       </ul>
     </div>
