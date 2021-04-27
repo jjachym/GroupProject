@@ -1,17 +1,28 @@
 <?php
   session_start();
 
+  //Imports 
   require_once '../models/User.php';
   include '../models/ErrorHandler.php';
 
+  //Check for a post request
+
   if (isset($_POST['login'])) {
+
+    //Check for a non empty input string
     if (isset($_POST['username']) && isset($_POST['psw'])) {
+
+      //create new user object
       $user = new User();
 
       $_SESSION['username'] = $_POST['username'];
 
+      //find user in database by their username
+
       if($user->find_user($_POST['username'])){
 
+
+        //authenticate user
         if($user->authenticate($_POST['psw'])){
           $_SESSION['user'] = $user;
           $_SESSION['success'] = "You have successfully logged on!";

@@ -1,4 +1,7 @@
 <?php
+
+    //User class containg all the relevant user attributes and methods
+
     session_start();
 
     require_once("DBHandler.php");
@@ -40,6 +43,7 @@
 
                 $row = $auth->fetch();
 
+                //verify if hashes of passwords match
                 if(password_verify($pwd,$row['userPassword'])){
                     $valid = true;
                 }
@@ -96,6 +100,7 @@
 
         }
 
+        //save new user into db
         public function save($password){
             try{
 

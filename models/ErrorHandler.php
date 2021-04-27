@@ -1,5 +1,7 @@
 <?php
 
+    //Error handling subroutines, with flash messages
+
     //associated CSS for flash messages
 
     echo "<style>    
