@@ -1,4 +1,7 @@
 <?php
+
+    //User class containg all the relevant user attributes and methods
+
     session_start();
 
     require_once("DBHandler.php");
@@ -40,7 +43,11 @@
 
                 $row = $auth->fetch();
 
-                print_r($row);
+                //verify if hashes of passwords match
+                if(password_verify($pwd,$row['userPassword'])){
+                    $valid = true;
+                }
+
             }catch(PDOException $e){
                 $valid = false;
             }
@@ -69,11 +76,14 @@
                 $auth->execute([$this->username]);
     
                 $row = $auth->fetch();
-    
-                $this->firstName = $row['userFirstName'];
-                $this->lastName = $row['userLastName'];
-                $this->id = $row['userID'];
 
+                if(isset($row['userID'])){
+                    $this->firstName = $row['userFirstName'];
+                    $this->lastName = $row['userLastName'];
+                    $this->id = $row['userID'];
+                }else{
+                    return false;
+                }
             }catch(PDOException $e){
                 return false;
             }
@@ -90,6 +100,7 @@
 
         }
 
+        //save new user into db
         public function save($password){
             try{
 
@@ -105,7 +116,7 @@
                 
                 while($check = $checkUsername->fetch()){
                     if($check['amount'] > 0){
-                        echo "Username is already taken. Please choose another";
+                        $_SESSION['errors'][] = "Username is already taken. Please choose another";
                         return false;
                     }else{
                         $addUser = $pdo->prepare("insert into User (userFirstName, userLastName, userUsername, userPassword) values (:fName, :lName, :uName, :psw)");
