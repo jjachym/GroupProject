@@ -126,35 +126,89 @@
         }
       </style>
 
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          /* Style the buttons that are used to open and close the accordion panel */
+          .accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: 0.4s;
+          }
+
+          /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+          .active, .accordion:hover {
+            background-color: #ccc;
+          }
+
+          /* Style the accordion panel. Note: hidden by default */
+          .panel {
+            padding: 0 18px;
+            background-color: white;
+            display: none;
+            overflow: hidden;
+          }
+        </style>
+      </head>
+
     <body>
         
         <iframe src="Master.html" width = "100%" height = "72" style="border:none;"></iframe>
           
         <form method="post">
           
-          <h1>Search Our Recipes</h1>
-          <p>Please fill out the relevant fields to search for a recipe, using either name, or ingredients, or both!</p>
-  
-          <hr>
-              <p>Enter the name of a recipe to search</p>
-              <!--THIS IS WHERE USER WILL ENTER RECIPE NAME-->
-              <label for="sByName"><b>Search Recipe By Name:</b></label>
-              <div><input type="shortText" name="searchByName" value="<?php if(isset($_SESSION['searchByName'])){echo $_SESSION['searchByName'];} ?>"></div>
-          </hr>
-          
-          <hr>
-              <p>Enter a list of ingredients, separated by a comma </p>
-              <!--THIS IS WHERE USER ENTERS INGREDIENTS SEPARATED BY A COMMA. MANIPULATE THE USE OF COMMA TO SEARCH IN DATABASE-->
-              <label for="sByIngredient"><b>Search Recipe By Ingredients:</b></label>
-              <div><input type="longText" name="searchByIngr" value="<?php if(isset($_SESSION['searchByIngr'])){echo $_SESSION['searchByIngr'];} ?>"></div>
-          </hr>
-  
-          <hr>
-              <div class="clearfix">
-                  <!--SEARCH. CHECK IF FIELDS HAVE VALUES AND SEARCH IN RELEVANT DATABASE TABLES-->
-                  <button type="submit" class="searchButton" name="sumbit" value="submit">Search Recipe</button>
-              </div>
-          </hr>
+        <button class="accordion"><h1>Search Our Recipes</h1></button>
+
+        <div class="panel">
+        <p>Please fill out the relevant fields to search for a recipe, using either name, or ingredients, or both!</p>
+        <hr>
+            <p>Enter the name of a recipe to search</p>
+            <!--THIS IS WHERE USER WILL ENTER RECIPE NAME-->
+            <label for="sByName"><b>Search Recipe By Name:</b></label>
+            <div><input type="shortText"></div>
+        </hr>
+
+        <hr>
+            <p>Enter a list of ingredients, separated by a comma </p>
+            <!--THIS IS WHERE USER ENTERS INGREDIENTS SEPARATED BY A COMMA. MANIPULATE THE USE OF COMMA TO SEARCH IN DATABASE-->
+            <label for="sByIngredient"><b>Search Recipe By Ingredients:</b></label>
+            <div><input type="longText"></div>
+        </hr>
+
+        <hr>
+            <div class="clearfix">
+                <!--SEARCH. CHECK IF FIELDS HAVE VALUES AND SEARCH IN RELEVANT DATABASE TABLES-->
+                <button type="button" class="searchButton">Search Recipe</button>
+            </div>
+        </hr>
+        </div>
+
+        <script>
+          var acc = document.getElementsByClassName("accordion");
+          var i;
+
+          for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+              /* Toggle between adding and removing the "active" class,
+              to highlight the button that controls the panel */
+              this.classList.toggle("active");
+
+              /* Toggle between hiding and showing the active panel */
+              var panel = this.nextElementSibling;
+              if (panel.style.display === "block") {
+                panel.style.display = "none";
+              } else {
+                panel.style.display = "block";
+              }
+            });
+          }
+        </script>
   
           <!-- NO OUTPUT AT THE MOMENT. GET IT WORKING BACK END FIRST THEN WE CAN DECIDE ON OUTPUT-->
           <!-- Output is held in $_SESSION['recipes'] -->
