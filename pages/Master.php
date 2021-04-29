@@ -27,6 +27,8 @@
         <li><a href="#" style = "color: white;">Get Recommendation</a></li>
         <li><a href="#" style = "color: white;">Add Recipe</a></li>
         <li><a href="#" style = "color: white;">User Area</a></li>
+        <li><a href="#" style = "color: white;">Login</a></li>
+        <li><a href="#" style = "color: white;">Signup</a></li>
         <li><a href="#" style = "color: white;">Sign Out</a></li>
       </ul>
     </div>
