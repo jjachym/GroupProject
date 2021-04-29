@@ -163,7 +163,7 @@
           
         <form method="post">
           
-        <button class="accordion"><h1>Search Our Recipes</h1></button>
+        <button class="accordion" type="button"><h1>Search Our Recipes</h1></button>
 
         <div class="panel">
         <p>Please fill out the relevant fields to search for a recipe, using either name, or ingredients, or both!</p>
