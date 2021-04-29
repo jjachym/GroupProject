@@ -1,8 +1,18 @@
 <?php
   require_once '../models/Recipe.php';
   include '../models/ErrorHandler.php';
-
+  
+  
   session_start();
+  
+  if (isset($_SESSION['searchedRecipe'])){
+    echo("searchedRecipe detected");
+    //change when the details page has been made
+    header("Location: SignUp.php");
+    unset($_SESSION['searchedRecipe']);
+    return;
+  }
+  
   
   //check if method is post
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -18,6 +28,7 @@
 
       $recipes = Recipe::fetchAll($options);
       $_SESSION['recipes'] = $recipes;
+      
 
     }elseif ($searchByName != null) {
 
@@ -25,6 +36,7 @@
 
       $recipes = Recipe::fetchAll($options);
       $_SESSION['recipes'] = $recipes;
+      
 
     }elseif ($searchByIngr != null) {
 
@@ -32,6 +44,7 @@
 
       $recipes = Recipe::fetchAll($options);
       $_SESSION['recipes'] = $recipes;
+      
 
     }else{
 
@@ -77,6 +90,7 @@
           background-color: #ddd;
           outline: none;
         }
+        
       
         hr {
           border: 1px solid #f1f1f1;
@@ -97,6 +111,17 @@
       
         button:hover {
           opacity:1;
+        }
+        
+        .button1 {
+          background-color: blue;
+          color: black;
+          padding: 14px 20px;
+          margin: 8px 0;
+          border: none;
+          cursor: pointer;
+          width: 10%;
+          opacity: 0.9;
         }
       
       
@@ -171,20 +196,20 @@
             <p>Enter the name of a recipe to search</p>
             <!--THIS IS WHERE USER WILL ENTER RECIPE NAME-->
             <label for="sByName"><b>Search Recipe By Name:</b></label>
-            <div><input type="shortText"></div>
+            <div><input type="shortText" name="searchByName" value="<?php if(isset($_SESSION['searchByName'])){echo $_SESSION['searchByName'];} ?>"></div>
         </hr>
 
         <hr>
             <p>Enter a list of ingredients, separated by a comma </p>
             <!--THIS IS WHERE USER ENTERS INGREDIENTS SEPARATED BY A COMMA. MANIPULATE THE USE OF COMMA TO SEARCH IN DATABASE-->
             <label for="sByIngredient"><b>Search Recipe By Ingredients:</b></label>
-            <div><input type="longText"></div>
+            <div><input type="longText"  name="searchByIngr" value="<?php if(isset($_SESSION['searchByIngr'])){echo $_SESSION['searchByIngr'];} ?>"></div>
         </hr>
 
         <hr>
             <div class="clearfix">
                 <!--SEARCH. CHECK IF FIELDS HAVE VALUES AND SEARCH IN RELEVANT DATABASE TABLES-->
-                <button type="button" class="searchButton">Search Recipe</button>
+                <button type="submit" class="searchButton">Search Recipe</button>
             </div>
         </hr>
         </div>
@@ -216,5 +241,17 @@
         <br>
         
     </body>
+
+<?php
+  echo'<form method="post">';
+    if (isset($_SESSION['recipes'])){
+       foreach($_SESSION['recipes'] as $r){
+          echo"<hr>";
+          echo"<button type='submit' name='searchedRecipe'>Title: $r->title | Description: $r->description </button>";
+          echo"<br>";
+        }
+     }
+   echo'</form>';
+?>
 
 </html>

@@ -18,13 +18,21 @@
 
         public $aiObject;
 
-        public function __construct($username="",$firstName="",$lastName="",$admin=false){
+        public function __construct($username="",$firstName="",$lastName="",$admin="false"){
             $this->username = $username;
             $this->firstName = $firstName;
             $this->lastName = $lastName;
             //$this->email = $email;
             $this->admin = $admin;
 
+        }
+        
+        public function admin($user){
+          if($user->admin == "true"){
+            return true;
+          }else{
+            return false;
+          }
         }
 
         //authenticate users credentials
@@ -119,13 +127,15 @@
                         $_SESSION['errors'][] = "Username is already taken. Please choose another";
                         return false;
                     }else{
-                        $addUser = $pdo->prepare("insert into User (userFirstName, userLastName, userUsername, userPassword) values (:fName, :lName, :uName, :psw)");
+                        $addUser = $pdo->prepare("insert into User (userFirstName, userLastName, userUsername, userPassword, admin) values (:fName, :lName, :uName, :psw, :admin)");
                         
                         $addUser->bindValue(':fName', $this->firstName, PDO::PARAM_STR);
                         $addUser->bindValue(':lName', $this->lastName, PDO::PARAM_STR);
                         $addUser->bindValue(':uName', $this->username, PDO::PARAM_STR);
                         $addUser->bindValue(':psw', $password, PDO::PARAM_STR);
+                        $addUser->bindValue(':admin', $this->admin, PDO::PARAM_STR);
                         
+                        echo$this->admin;
                         $addUser->execute();
                         
                         $pdo->commit();
