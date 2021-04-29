@@ -79,7 +79,7 @@
                     
                   }
                   return $recipes;
-                   $_SESSION['errors'][] = "Recipes with that option successfully found";
+                   $_SESSION['success'] = "Recipes with that option successfully found";
                   }
             }catch (PDOException $e){
                     $pdo->rollBack();
@@ -131,7 +131,7 @@
                     }
                   }
                 }
-                 $_SESSION['errors'][] = "Recipe successfully found";
+                 $_SESSION['success'] = "Recipe successfully found";
                 return true;
                 
           }catch (PDOException $e){
@@ -181,7 +181,7 @@
                     
                   }
               }
-               $_SESSION['errors'][] = "Recipe successfully saved";
+               $_SESSION['success'] = "Recipe successfully saved";
               return true;
               
           }catch (PDOException $e){
