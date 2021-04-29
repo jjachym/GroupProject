@@ -33,7 +33,6 @@
          * optional argument options could be used for slight filtering, i.e. all italian recipes etc.
          * */
         public static function fetchAll($options=null){
-            echo $options;
             //return array of recipe objects
             try{
             
@@ -54,36 +53,47 @@
                     $recipe = new Recipe($fetch['recipeName'], $fetch['ingredients'], $fetch['description'], $fetch['instructions'], $fetch['tag'], $fetch['averageRating']);
                     array_push($recipes, $recipe);
                   }
-                   $_SESSION['errors'][] = "Recipes successfully found";
                   return $recipes;
+
                   //Runs if the options value is not null
                   //Sees if the option has any results in the database
                   //Sets session error if no results found
+
+
                 }else{
-                  $fetchOptions=$pdo->prepare("select count(*) as amount from recipes where recipeName like '%{$options}%' or description like '%{$options}%'");
-                  $fetchOptions->execute();
-                  while($fetch = $fetchOptions->fetch()){
-                    echo $fetch['amount'];
-                    if($fetch['amount'] < 1){
-                      $_SESSION['errors'][] = "No recipe with that option has been found. Please try another";
-                      return $recipes;
-                      //Gets all recipes from the database where the name or the description holds the option variable string
+                  
+                  $sql = "SELECT * FROM recipes WHERE ";
+                  $iterationCounter = 1;
+
+                  foreach ($options as $key => $option) {
+                    if ($iterationCounter == count($options)) {
+                      $sql .= $key." LIKE '%".$option."%'";
                     }else{
-                      $getOptions=$pdo->prepare("select * from recipes where recipeName like '%{$options}%' or description like '%{$options}%'");
-                      $getOptions->execute();
-                      while($get =$getOptions->fetch()){
-                        $recipe = new Recipe($get['recipeName'], $get['ingredients'], $get['description'], $get['instructions'], $get['tag'], $get['averageRating']);
-                        array_push($recipes, $recipe);
-                      }
+                      $sql .= $key." LIKE '%".$option."%' AND ";
                     }
-                    
+
+                    $iterationCounter++;
                   }
+                  
+                  $fetchOptions = $pdo->prepare($sql);
+
+                  $fetchOptions->execute();
+
+                  if ($fetchOptions->rowCount() > 0) {
+                    while($get = $fetchOptions->fetch()){
+                          $recipe = new static($get['recipeName'], $get['ingredients'], $get['description'], $get['instructions'], $get['tag'], $get['averageRating']);
+                          array_push($recipes, $recipe);
+                    }
+                  }else{
+                    $_SESSION['errors'][] = "No Recipes Found!";
+                  }
+
                   return $recipes;
-                   $_SESSION['success'] = "Recipes with that option successfully found";
-                  }
+                }
             }catch (PDOException $e){
                     $pdo->rollBack();
-                     $_SESSION['errors'][] = "Database error please try again";
+                    $_SESSION['errors'][] = "Database error please try again";
+                    echo "DB Error";
                     return $recipes;
                 }
       }

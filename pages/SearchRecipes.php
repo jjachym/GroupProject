@@ -1,37 +1,44 @@
 <?php
-  session_start();
   require_once '../models/Recipe.php';
   include '../models/ErrorHandler.php';
+
+  session_start();
   
-  function searchName($title, $recipe){
-    if ($recipe->findRecipe($title)){
-      echo"Result: <br>";
-      echo"$recipe->title <br>";
-      echo"$recipe->description <br>";
-      echo"$recipe->ingredients <br>";
-      echo"$recipe->instructions <br>";
-      echo"$recipe->tags <br>";
-      echo"$recipe->averageRating <br>";
-      return true;
+  //check if method is post
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    foreach ($_REQUEST as $key => $value) {
+      ${$key} = addslashes($value);
+      $_SESSION[$key] = addslashes($value);
+    }
+
+
+    if ($searchByName != null && $searchByIngr != null) {
+      $options = array('recipeName' => $searchByName, 'ingredients' => $searchByIngr);
+
+      $recipes = Recipe::fetchAll($options);
+      $_SESSION['recipes'] = $recipes;
+
+    }elseif ($searchByName != null) {
+
+      $options = array('recipeName' => $searchByName);
+
+      $recipes = Recipe::fetchAll($options);
+      $_SESSION['recipes'] = $recipes;
+
+    }elseif ($searchByIngr != null) {
+
+      $options = array('ingredients' => $searchByIngr);
+
+      $recipes = Recipe::fetchAll($options);
+      $_SESSION['recipes'] = $recipes;
+
     }else{
-      errorHandler("No recipe found");
-      return false;
+
+      errorHandler("Please fill out at least one field!");     
+
     }
-  }
-  if (isset($_POST['submit'])){
-    foreach ($_POST as $key => $value) {
-      ${$key} = $value;
-    }
-    echo"post detected";
-    if ($searchByName != ""){
-      $recipe = new Recipe();
-      if(searchName($searchByName, $recipe)){
-        $_SESSION['success'] = "You have succesfully searched a recipe name";
-        $_SESSION['recipe'] = $recipe;
-      }
-    }else{
-      errorHandler("No title to search was provided");
-    }
+
     header("Location: SearchRecipes.php");
     return;
   }
@@ -139,19 +146,20 @@
               <p>Enter a list of ingredients, separated by a comma </p>
               <!--THIS IS WHERE USER ENTERS INGREDIENTS SEPARATED BY A COMMA. MANIPULATE THE USE OF COMMA TO SEARCH IN DATABASE-->
               <label for="sByIngredient"><b>Search Recipe By Ingredients:</b></label>
-              <div><input type="longText" name="searchByIngr"></div>
+              <div><input type="longText" name="searchByIngr" value="<?php if(isset($_SESSION['searchByIngr'])){echo $_SESSION['searchByIngr'];} ?>"></div>
           </hr>
   
           <hr>
               <div class="clearfix">
                   <!--SEARCH. CHECK IF FIELDS HAVE VALUES AND SEARCH IN RELEVANT DATABASE TABLES-->
-                  <button type="button" class="searchButton" name="sumbit">Search Recipe</button>
+                  <button type="submit" class="searchButton" name="sumbit" value="submit">Search Recipe</button>
               </div>
           </hr>
   
-          <!--NO OUTPUT AT THE MOMENT. GET IT WORKING BACK END FIRST THEN WE CAN DECIDE ON OUTPUT-->
-        
+          <!-- NO OUTPUT AT THE MOMENT. GET IT WORKING BACK END FIRST THEN WE CAN DECIDE ON OUTPUT-->
+          <!-- Output is held in $_SESSION['recipes'] -->
         </form>
+        <br>
         
     </body>
 
