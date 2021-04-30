@@ -4,12 +4,16 @@
   
   
   session_start();
+
+  function splitIngredients($ingString){
+    $ingredientsArray = explode(",",$ingString);
+    return $ingredientsArray;
+  }
   
-  if (isset($_SESSION['searchedRecipe'])){
-    echo("searchedRecipe detected");
+  if (isset($_POST['searchedRecipe'])){
     //change when the details page has been made
-    header("Location: SignUp.php");
-    unset($_SESSION['searchedRecipe']);
+    $_SESSION['recipeDetail'] = $_POST['searchedRecipe'];
+    header("Location: RecipeDetail.php");
     return;
   }
   
@@ -24,7 +28,8 @@
 
 
     if ($searchByName != null && $searchByIngr != null) {
-      $options = array('recipeName' => $searchByName, 'ingredients' => $searchByIngr);
+      $ingredients = splitIngredients($searchByIngr);
+      $options = array('recipeName' => [$searchByName], 'ingredients' => $ingredients);
 
       $recipes = Recipe::fetchAll($options);
       $_SESSION['recipes'] = $recipes;
@@ -32,18 +37,22 @@
 
     }elseif ($searchByName != null) {
 
-      $options = array('recipeName' => $searchByName);
+      $options = array('recipeName' => [$searchByName]);
 
       $recipes = Recipe::fetchAll($options);
       $_SESSION['recipes'] = $recipes;
       
 
     }elseif ($searchByIngr != null) {
+      
+      $ingredients = splitIngredients($searchByIngr);
 
-      $options = array('ingredients' => $searchByIngr);
+      $options = array('ingredients'=>$ingredients);
+
 
       $recipes = Recipe::fetchAll($options);
       $_SESSION['recipes'] = $recipes;
+
       
 
     }else{
@@ -234,21 +243,20 @@
             });
           }
         </script>
-  
-          <!-- NO OUTPUT AT THE MOMENT. GET IT WORKING BACK END FIRST THEN WE CAN DECIDE ON OUTPUT-->
-          <!-- Output is held in $_SESSION['recipes'] -->
         </form>
         <br>
         
     </body>
 
 <?php
+  $arrayPosition = 0;
   echo'<form method="post">';
     if (isset($_SESSION['recipes'])){
        foreach($_SESSION['recipes'] as $r){
           echo"<hr>";
-          echo"<button type='submit' name='searchedRecipe'>Title: $r->title | Description: $r->description </button>";
+          echo"<button type='submit' name='searchedRecipe' value='$arrayPosition'>Title: $r->title | Description: $r->description </button>";
           echo"<br>";
+          $arrayPosition++;
         }
      }
    echo'</form>';

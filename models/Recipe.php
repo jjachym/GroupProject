@@ -64,15 +64,25 @@
                   
                   $sql = "SELECT * FROM recipes WHERE ";
                   $iterationCounter = 1;
+                  $totalLength = 0;
+
+                  foreach ($options as $option) {
+                    foreach ($option as $o) {
+                      $totalLength++;
+                    }
+                  }
 
                   foreach ($options as $key => $option) {
-                    if ($iterationCounter == count($options)) {
-                      $sql .= $key." LIKE '%".$option."%'";
-                    }else{
-                      $sql .= $key." LIKE '%".$option."%' AND ";
+                    foreach ($option as $o) {
+                      if ($iterationCounter == $totalLength) {
+                        $sql .= $key." LIKE '%".$o."%'";
+                      }else{
+                        $sql .= $key." LIKE '%".$o."%' AND ";
+                      }
+                      $iterationCounter++;
                     }
 
-                    $iterationCounter++;
+
                   }
                   
                   $fetchOptions = $pdo->prepare($sql);
@@ -153,7 +163,6 @@
 
         //method that save a Recipe object into the db
         public function save(){
-            echo"save ran";
             //return true if insertion into db is valid
             
             try{
@@ -197,9 +206,36 @@
           }catch (PDOException $e){
                 $pdo->rollBack();
                 return false;
-            }
+          }
             
     }
+
+    public function updateRating($rating){
+      try{
+            
+              
+        $db = new DBHandler();
+        $pdo = $db->getInstance();
+    
+        //Starts a transaction
+        $pdo->beginTransaction();
+
+        $update = $pdo->prepare("UPDATE recipes SET averageRating = (averageRating + :rating )/2 WHERE recipeName = :recipeName");
+
+        $update->bindValue(":rating",$rating,PDO::PARAM_INT);
+        $update->bindValue(":recipeName",$this->title,PDO::PARAM_STR);
         
+        $update->execute();
+
+        $pdo->commit();
+        return true;
+
+      }catch (PDOException $e){
+        $pdo->rollBack();
+        $_SESSION['errors'][] = "DB Error";
+        return false;
+      }
     }
+        
+  }
     
