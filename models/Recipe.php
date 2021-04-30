@@ -1,4 +1,3 @@
-<!-- TODO: php classes -->
 
 <?php
     session_start();
@@ -210,6 +209,7 @@
             
     }
 
+    //method that updates ratings - currently average ratings are not properly displayed
     public function updateRating($rating){
       try{
             
