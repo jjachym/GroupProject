@@ -1,3 +1,8 @@
+<?php    
+    session_start();
+
+?>
+
 <!DOCTYPE html>
 
 <head>
@@ -22,16 +27,21 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li><a href="#" style = "color: white;">Home</a></li>
-        <li><a href="#" style = "color: white;">Search Recipe</a></li>
-        <li><a href="#" style = "color: white;">Get Recommendation</a></li>
-        <li><a href="#" style = "color: white;">Add Recipe</a></li>
-        <li><a href="#" style = "color: white;">User Area</a></li>
+        <li><a href="../index.php" style = "color: white;">Home</a></li>
+        <li><a href="SearchRecipes.php" style = "color: white;">Search Recipe</a></li>
+        <li><a href="GetRecommendations.php" style = "color: white;">Get Recommendation</a></li>
+        <li><a href="AddRecipe.php" style = "color: white;">Add Recipe</a></li>
+        <li><a href="UserPage.php" style = "color: white;">User Area</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#" style = "color: white;">Login</a></li>
-        <li><a href="#" style = "color: white;">Signup</a></li>
-        <li><a href="#" style = "color: white;">Sign Out</a></li>
+        <?php
+          if (!isset($_SESSION['user'])) {
+            echo '<li><a href="Login.php" style = "color: white;">Login</a></li><li><a href="SignUp.php" style = "color: white;">Signup</a></li>';
+          }else{
+            echo '<li><a href="#" style = "color: white;">Hello '.$_SESSION['user']->username.'</a></li><li><a href="#" style = "color: white;">Sign Out</a></li>';
+          }
+
+        ?>
       </ul>
     </div>
   </div>

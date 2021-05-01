@@ -1,9 +1,11 @@
 <?php
+  
+  require_once '../models/User.php';
   require_once '../models/Recipe.php';
-  include '../models/ErrorHandler.php';
-  
-  
+  include 'Master.php';
+
   session_start();
+
 
   function splitIngredients($ingString){
     $ingredientsArray = explode(",",$ingString);
@@ -192,9 +194,7 @@
       </head>
 
     <body>
-        
-        <iframe src="Master.html" width = "100%" height = "72" style="border:none;"></iframe>
-          
+                  
         <form method="post">
           
         <button class="accordion" type="button"><h1>Search Our Recipes</h1></button>

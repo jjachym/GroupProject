@@ -1,3 +1,11 @@
+<?php
+  include 'Master.php';
+  include '../models/ErrorHandler.php';
+
+  session_start();
+
+?>
+
 <!DOCTYPE html>
 <html>
   

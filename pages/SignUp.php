@@ -1,7 +1,8 @@
 <?php
-  session_start();
   require_once '../models/User.php';
   include '../models/ErrorHandler.php';
+  include 'Master.php';
+  session_start();
 
   function checkFirstName($Fname){
     if(strlen($Fname) > 15){
@@ -154,7 +155,6 @@
   </style>
 
 <body>
-<iframe src="Master.html" width = "100%" height = "72" style="border:none;"></iframe>
   <form method= "post" style="border:1px solid #ccc">
     <div class="container">
       <h1>Sign Up to AI Foods</h1>

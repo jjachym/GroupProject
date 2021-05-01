@@ -1,10 +1,11 @@
 <?php
-  session_start();
 
   //Imports 
   require_once '../models/User.php';
   include '../models/ErrorHandler.php';
+  include 'Master.php';
 
+  session_start();
   //Check for a post request
 
   if (isset($_POST['login'])) {
@@ -114,10 +115,9 @@
 </head>
 
 <body>
-<iframe src="Master.html" width = "100%" height = "72" style="border:none;"></iframe>
 
 <h2>Login To AI Foods</h2>
-
+<?php print_r($_SESSION['user']); ?>
 <form method="post">
   
 
