@@ -44,7 +44,7 @@
     
     echo "<div class='col-lg-1'>";
     
-    if ($ownProfile) {
+    if ($ownProfile && $_SESSION['user']->admin) {
       echo "<a class='btn btn-primary' href='Admin.php' role='button'>Manage Recipe Suggestions</a>";
     } else {
       echo "<div class='col-lg-1'></div>";
