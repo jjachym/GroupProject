@@ -54,6 +54,7 @@
     echo "</div>";
     
     //Deals with the About section (username, real name, desc, etc.)
+    /*
     echo "<div class='container'>";
     echo "<div class='row'>";
     echo "<div class='col-lg-1'></div>";
@@ -73,6 +74,7 @@
     echo "</div>";
     echo "<div class='col-lg-1'></div>";
     echo "</div>";
+    */
     
     //Deals with the part of the page responsible for showing the recipe reviews a user has made.
     echo "<div class='container'>";
