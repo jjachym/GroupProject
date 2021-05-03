@@ -17,6 +17,11 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <?php
+    if (!isset($_SESSION['user'])) {
+      header("Location: LogIn.php");
+    }
+  ?>
 </head>
 
 <body>
@@ -101,21 +106,7 @@
   }
   
   //Displays different versions of the page depending on the set variables.
-  if (isset($_POST['user'])) {
-    $userProf = new User();
-    $e = $userProf->find_user();
-    if (!$e) {
-      buildPage();
-    } else {
-      displayMissingProf();
-    }
-  } else {
-    if (isset($_SESSION["user"])) {
-      buildPage($_SESSION["user"]);
-    } else {
-      displayError();
-    }
-  }
+  buildPage($_SESSION["user"]);
   
 ?>
 
