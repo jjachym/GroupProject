@@ -122,6 +122,18 @@
         echo "<label>Error: Please enter a valid email </label>";
         $valid = false;
       }
+    
+      if ($submitted && $valid) {
+        $db = new DBHandler();
+        $pdo = $db->getInstance();
+        
+        $saveData = $pdo->prepare("update User set userFirstName =:firstname, userLastName =:lastname, userEmail =:email where userUsername =:username");
+        $saveData->bindValue(':firstname',$_POST['firstname']);
+        $saveData->bindValue(':lastname',$_POST['lastname']);
+        $saveData->bindValue(':email',$_POST['email']);
+        $saveData->bindValue(':username',$_POST['username']);
+        $saveData->execute();
+      }
       
       echo "</div>";
       echo "<div class='form-group'>";
