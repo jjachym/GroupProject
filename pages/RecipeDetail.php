@@ -54,6 +54,8 @@
 
     $user = $_SESSION['user'];
 
+    $intRating = intval($rating);
+
     $user->rate_recipe($recipe,$rating);
 
     header("Location: RecipeDetail.php");
@@ -236,7 +238,7 @@
             <div class="card" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $recipe->title; ?></h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><small>Average Rating: <?php echo $recipe->averageRating; ?>☆</small></h6>
+                    <h6 class="card-subtitle mb-2 text-muted"><small>Average Rating: <?php echo number_format($recipe->averageRating,2); ?>☆</small></h6>
                     <hr>
                     <p class="card-text"><h5>Description</h5><?php echo $recipe->description;?></p>
                     <hr>

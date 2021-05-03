@@ -1,11 +1,12 @@
 <?php
     require_once 'Recipe.php';
+    require_once 'DBHandler.php';
+    include 'functions.php';
 
     //User class containg all the relevant user attributes and methods
-
+    
     session_start();
 
-    require_once("DBHandler.php");
 
     class User
     {
@@ -120,25 +121,11 @@
                 //Check if the user rated this recipe already
                 if($checkRating->rowCount() > 0){
 
-                    //Update rating for this user
-
-                    $updateRating = $pdo->prepare("UPDATE userRatings SET rating = :rating WHERE recipeName = :recipeName AND userUsername = :username");
-                    $updateRating->bindParam(':rating',$rating);
-                    $updateRating->bindParam(':recipeName', $recipe->title);
-                    $updateRating->bindParam(':username', $this->username);
-
-                    $updateRating->execute();
+                    update($recipe->title,$this->username,$rating);
                 }else{
                     //Add new rating to db
 
-                    $saveRating = $pdo->prepare("INSERT INTO userRatings(recipeName,userUsername,rating) VALUES ( :recipeName, :username, :rating)");
-
-                    $saveRating->bindParam(':rating',$rating);
-                    $saveRating->bindParam(':recipeName',$recipe->title);
-                    $saveRating->bindParam(':username',$this->username);
-
-                    $saveRating->execute();
-
+                    rate($recipe->title,$this->username,$rating);
                 }
 
                 return true;
@@ -280,8 +267,6 @@
                 //$getRecipes->bindValue(':username', $this->username, PDO::PARAM_STR);
                 
                 $getRecipes->execute();
-                
-                print_r($getRecipes);
 
                 while ($entry = $getRecipes->fetch()) {
 
@@ -303,35 +288,7 @@
         
         public function predict(){
             
-            //fetch possible recipes for prediction
-            $recipes = Recipe::fetchAll();
             
-            $nullMatrix = $this->getNullMatrix($recipes);
-            $predictionMatrix = array();
-            
-            //convert recipes into matrix form
-            foreach ($recipes as $recipe) {
-                $i = $this->getRecipeMatrix($recipe,$nullMatrix);
-                array_push($predictionMatrix,$i);
-            }
-            
-            //fetch user rated recipes
-
-            $ratedRecipes = $this->get_user_ratings($this->username);
-            $ratedRecipesMatrix = array();
-
-            foreach ($ratedRecipes as $r) {
-                $ratedRecipe = $r[0];
-
-                $i = $this->getRecipeMatrix($ratedRecipe,$nullMatrix);
-                array_push($ratedRecipesMatrix,[$i,$r[1]]);
-            }
-
-            /**
-             * 
-             * Pass prediction Matrix into python script
-             * 
-             */
 
             return true;
         }
