@@ -11,18 +11,26 @@
 
 <body>
 <?php
-  
-  function buttonHandle() {
-    if ($_POST['button-accept']) {
-      $pdo->prepare("insert into recipes() values()");
-    }
-
-    $pdo->prepare("delete from suggestions where ");
-  } 
-  
   require_once '../models/DBHandler.php';
   include '../models/ErrorHandler.php';
   include '../models/Recipe.php';
+  
+  function buttonHandle() {
+    if ($state == add) {
+      $addRecipe = new Recipe();
+      $addRecipe->__construct($_POST['name'], $_POST['ingredient'], $_POST['description'], $_POST['instruction'], $_POST['tags'], 3);
+      $addRecipe->save();
+    }
+
+    $removeSuggestion = $pdo->prepare("delete from suggestions where suggestionName =:name, suggestionIngredients =:ing, suggestionDescription =:desc, suggestionInstructions =:inst, suggestionTags=:tags");
+    
+    $removeSuggestion->bindValue(':name',$_POST['name']);
+    $removeSuggestion->bindValue(':ing',$_POST['ingredient']);
+    $removeSuggestion->bindValue(':desc',$_POST['description']);
+    $removeSuggestion->bindValue(':inst',$_POST['instruction']);
+    $removeSuggestion->bindValue(':tags',$_POST['tags']);
+    $removeSuggestion->execute();
+  } 
   
   $e = new DBHandler();
   $pdo = $e->getInstance();
