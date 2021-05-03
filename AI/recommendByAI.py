@@ -18,7 +18,7 @@ def recommendByAI (data) :
     model.add(Dense(128, activation="relu"))
 
     # final layer is dense 5 as this is the amount of classes (ratings 1 to 5 stars)
-    model.add(Dense(10, activation="softmax"))
+    model.add(Dense(5, activation="softmax"))
 
     # compile 
     model.compile(optimizer="adam", loss="categorical_crossentropy")
