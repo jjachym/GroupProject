@@ -110,7 +110,11 @@
       displayMissingProf();
     }
   } else {
-    displayError();
+    if (isset($_SESSION["user"])) {
+      buildPage($_SESSION["user"]);
+    } else {
+      displayError();
+    }
   }
   
 ?>
