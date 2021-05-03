@@ -2,6 +2,7 @@
   
   require_once '../models/User.php';
   require_once '../models/Recipe.php';
+  include '../models/ErrorHandler.php';
   include 'Master.php';
 
   session_start();
@@ -58,7 +59,8 @@
 
     }else{
 
-      errorHandler("Please fill out at least one field!");     
+      $recipes = Recipe::fetchAll();
+      $_SESSION['recipes'] = $recipes;  
 
     }
 
