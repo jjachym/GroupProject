@@ -1,4 +1,5 @@
 <?php
+    require_once 'Recipe.php';
 
     //User class containg all the relevant user attributes and methods
 
@@ -100,21 +101,61 @@
 
         }
 
-        public function predict(){
+        //rate recipe
+        public function rate_recipe($recipe,$rating){
+            try{
+                
+                $db = new DBHandler();
+                $pdo = $db->getInstance();
+                
+                //Starts a transaction
+                $pdo->beginTransaction();
+                
+                $checkRating = $pdo->prepare("SELECT * FROM userRatings WHERE recipeName = :recipeName AND userUsername = :username");
+                $checkRating->bindParam(':recipeName', $recipe->title);
+                $checkRating->bindParam(':username', $this->username);
 
+                $checkRating->execute();
+
+                //Check if the user rated this recipe already
+                if($checkRating->rowCount() > 0){
+
+                    //Update rating for this user
+
+                    $updateRating = $pdo->prepare("UPDATE userRatings SET rating = :rating WHERE recipeName = :recipeName AND userUsername = :username");
+                    $updateRating->bindParam(':rating',$rating);
+                    $updateRating->bindParam(':recipeName', $recipe->title);
+                    $updateRating->bindParam(':username', $this->username);
+
+                    $updateRating->execute();
+                }else{
+                    //Add new rating to db
+
+                    $saveRating = $pdo->prepare("INSERT INTO userRatings(recipeName,userUsername,rating) VALUES ( :recipeName, :username, :rating)");
+
+                    $saveRating->bindParam(':rating',$rating);
+                    $saveRating->bindParam(':recipeName',$recipe->title);
+                    $saveRating->bindParam(':username',$this->username);
+
+                    $saveRating->execute();
+
+                }
+
+                return true;
+            }catch (PDOException $e){
+                $_SESSION['errors'][] = "DB error please try later!";
+                $pdo->rollBack();
+                return false;
+            }
         }
-
-        public function rate_recipe($recipe_id,$rating){
-
-        }
-
+        
         //save new user into db
         public function save($password){
             try{
-
+                
                 $db = new DBHandler();
                 $pdo = $db->getInstance();
-            
+                
                 //Starts a transaction
                 $pdo->beginTransaction();
                 
@@ -124,7 +165,7 @@
                 
                 while($check = $checkUsername->fetch()){
                     if($check['amount'] > 0){
-                        $_SESSION['errors'][] = "Username is already taken. Please choose another";
+                        $_SESSION['errors'][] = "Username is already taken. Please choose another!";
                         return false;
                     }else{
                         $addUser = $pdo->prepare("insert into User (userFirstName, userLastName, userUsername, userPassword, admin) values (:fName, :lName, :uName, :psw, :admin)");
@@ -134,14 +175,13 @@
                         $addUser->bindValue(':uName', $this->username, PDO::PARAM_STR);
                         $addUser->bindValue(':psw', $password, PDO::PARAM_STR);
                         $addUser->bindValue(':admin', $this->admin, PDO::PARAM_STR);
-                        
-                        echo$this->admin;
+
                         $addUser->execute();
                         
                         $pdo->commit();
                     }
                 }
-
+                
                 return true;
             }catch (PDOException $e){
                 $pdo->rollBack();
@@ -149,8 +189,154 @@
             }
         }
 
+        private function getNullMatrix($recipes){
+            $nullMatrix = array();
+            
+            foreach ($recipes as $recipe) {
+                
+                //Parse ingredients into an array
+                
+                $ingredientsArray = array();
+                
+                $cleanIngredients = preg_replace('/[^A-Za-z "]/', '', $recipe->ingredients);
+                
+                $length = strlen($cleanIngredients);
+                $active = false;
+                
+                for ($i=0; $i < $length; $i++) { 
+                    if ($cleanIngredients[$i] == '"') {
+                        if($active){
+                            if (strlen($substr) > 1) {
+                                array_push($ingredientsArray,$substr);
+                            }
+                            $active = false;
+                        }else{
+                            $substr = "";
+                            $active = true;
+                        }
+                    }else{
+                        $substr .= $cleanIngredients[$i];
+                    }
+                }
+                
+                //Build large vector containing all possible ingredients
+                
+                foreach ($ingredientsArray as $ingredient) {
+                    $lowerIngredient = strtolower($ingredient);
+                    $nullMatrix[$lowerIngredient] = 0;
+                }
+                
+            }
 
+            return $nullMatrix;
+        }
+        
+        private function getRecipeMatrix($recipe,$nullMatrix){
+            
+            //Parse ingredients into an array
+                
+            $ingredientsArray = array();
+                
+            $cleanIngredients = preg_replace('/[^A-Za-z "]/', '', $recipe->ingredients);
+            
+            $length = strlen($cleanIngredients);
+            $active = false;
+            
+            for ($i=0; $i < $length; $i++) { 
+                if ($cleanIngredients[$i] == '"') {
+                    if($active){
+                        if (strlen($substr) > 1) {
+                            array_push($ingredientsArray,$substr);
+                        }
+                        $active = false;
+                    }else{
+                        $substr = "";
+                        $active = true;
+                    }
+                }else{
+                    $substr .= $cleanIngredients[$i];
+                }
+            }
+            
+            //Build large vector containing all possible ingredients
+            
+            foreach ($ingredientsArray as $ingredient) {
+                $lowerIngredient = strtolower($ingredient);
+                $nullMatrix[$lowerIngredient] = 1;
+            }
 
+            return $nullMatrix;
+        }
 
+        public function get_user_ratings(){
+            try{
+                
+                $db = new DBHandler();
+                $pdo = $db->getInstance();
+
+                $recipes = array();
+                
+                $getRecipes = $pdo->prepare("SELECT * FROM userRatings");
+                //$getRecipes->bindValue(':username', $this->username, PDO::PARAM_STR);
+                
+                $getRecipes->execute();
+                
+                print_r($getRecipes);
+
+                while ($entry = $getRecipes->fetch()) {
+
+                    $recipe = new Recipe();
+                    $recipe->findRecipe($entry['recipeName']);
+
+                    $recipeAndRating = [$recipe,$entry['rating']];
+
+                    array_push($recipes,$recipeAndRating);
+                }
+
+                
+                return $recipes;
+            }catch (PDOException $e){
+                echo "DB Error";
+                return false;
+            }
+        }
+        
+        public function predict(){
+            
+            //fetch possible recipes for prediction
+            $recipes = Recipe::fetchAll();
+            
+            $nullMatrix = $this->getNullMatrix($recipes);
+            $predictionMatrix = array();
+            
+            //convert recipes into matrix form
+            foreach ($recipes as $recipe) {
+                $i = $this->getRecipeMatrix($recipe,$nullMatrix);
+                array_push($predictionMatrix,$i);
+            }
+            
+            //fetch user rated recipes
+
+            $ratedRecipes = $this->get_user_ratings($this->username);
+            $ratedRecipesMatrix = array();
+
+            foreach ($ratedRecipes as $r) {
+                $ratedRecipe = $r[0];
+
+                $i = $this->getRecipeMatrix($ratedRecipe,$nullMatrix);
+                array_push($ratedRecipesMatrix,[$i,$r[1]]);
+            }
+
+            /**
+             * 
+             * Pass prediction Matrix into python script
+             * 
+             */
+
+            return true;
+        }
+        
+        
+        
     }
- 
+    

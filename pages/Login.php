@@ -27,6 +27,8 @@
         if($user->authenticate($_POST['psw'])){
           $_SESSION['user'] = $user;
           $_SESSION['success'] = "You have successfully logged on!";
+          header("Location: SearchRecipes.php");
+          return;
         }else{
           errorHandler("Incorrect password!");
         }
@@ -117,7 +119,6 @@
 <body>
 
 <h2>Login To AI Foods</h2>
-<?php print_r($_SESSION['user']); ?>
 <form method="post">
   
 

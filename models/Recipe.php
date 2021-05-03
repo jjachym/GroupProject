@@ -150,7 +150,6 @@
                     }
                   }
                 }
-                 $_SESSION['success'] = "Recipe successfully found";
                 return true;
                 
           }catch (PDOException $e){

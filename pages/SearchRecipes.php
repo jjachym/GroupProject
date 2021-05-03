@@ -6,7 +6,6 @@
 
   session_start();
 
-
   function splitIngredients($ingString){
     $ingredientsArray = explode(",",$ingString);
     return $ingredientsArray;

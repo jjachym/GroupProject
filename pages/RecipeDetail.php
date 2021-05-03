@@ -1,4 +1,5 @@
 <?php
+  require_once '../models/User.php';
   require_once '../models/Recipe.php';
   include '../models/ErrorHandler.php';
   include 'Master.php';
@@ -51,6 +52,10 @@
 
     $recipe->updateRating($rating);    
 
+    $user = $_SESSION['user'];
+
+    $user->rate_recipe($recipe,$rating);
+
     header("Location: RecipeDetail.php");
     return;
   }
@@ -61,7 +66,6 @@
 
 <html>
       <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <style>
             body {font-family: Arial, Helvetica, sans-serif;}
             * {box-sizing: border-box}
@@ -249,23 +253,29 @@
                     <hr>
                     <p class="card-text"><h5>Instructions</h5><?php echo $recipe->instructions;?></p>
                     <hr>
-                    <div>
-                        <form name="starform" onChange="document.starform.submit()" method="post">
-                            <div class="rating" style="width: 100%; text-align: right;">
-                                <input id="star5" name="star" type="radio" value="5" class="radio-btn hide" />
-                                <label for="star5" style="font-size:20px;">☆</label>
-                                <input id="star4" name="star" type="radio" value="4" class="radio-btn hide" />
-                                <label for="star4" style="font-size:20px;">☆</label>
-                                <input id="star3" name="star" type="radio" value="3" class="radio-btn hide" />
-                                <label for="star3" style="font-size:20px;">☆</label>
-                                <input id="star2" name="star" type="radio" value="2" class="radio-btn hide" />
-                                <label for="star2" style="font-size:20px;">☆</label>
-                                <input id="star1" name="star" type="radio" value="1" class="radio-btn hide" />
-                                <label for="star1" style="font-size:20px;">☆</label>
-                                <p style="font-size:20px;"> :Rate </p>
-                                <div class="clear"></div>
-                            </div>
-                        </form>
+                    <?php
+                    if (isset($_SESSION['user'])) {
+                        echo '
+                        <div>
+                            <form name="starform" onChange="document.starform.submit()" method="post">
+                                <div class="rating" style="width: 100%; text-align: right;">
+                                    <input id="star5" name="star" type="radio" value="5" class="radio-btn hide" />
+                                    <label for="star5" style="font-size:20px;">☆</label>
+                                    <input id="star4" name="star" type="radio" value="4" class="radio-btn hide" />
+                                    <label for="star4" style="font-size:20px;">☆</label>
+                                    <input id="star3" name="star" type="radio" value="3" class="radio-btn hide" />
+                                    <label for="star3" style="font-size:20px;">☆</label>
+                                    <input id="star2" name="star" type="radio" value="2" class="radio-btn hide" />
+                                    <label for="star2" style="font-size:20px;">☆</label>
+                                    <input id="star1" name="star" type="radio" value="1" class="radio-btn hide" />
+                                    <label for="star1" style="font-size:20px;">☆</label>
+                                    <p style="font-size:20px;"> :Rate </p>
+                                    <div class="clear"></div>
+                                </div>
+                            </form>
+                        </div>';
+                    }
+                    ?>
                 </div>
             </div>
         </div>
