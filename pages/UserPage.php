@@ -28,14 +28,28 @@
 <?php
 
   function buildPage() {
+    if ($_SESSION['user'] == $userProf) {
+      $ownProfile = true;
+    }
+    
     //Deals with the first line, with the edit button being present if the logged user is viewing their own page. 
+    //Also deals with the Admin link, to approve/deny recipe requests
     echo "<div class='container'>";
     echo "<div class='row'>";
-    echo "<div class='col-lg-11'></div>";
-    echo "<div class='col-lg-1'>";
-    if ($user == $userProf) {
-      echo "<a class='btn btn-primary' href='editUserPage.php' role='button'>Link</a>";
+    echo "<div class='col-lg-8'></div>";
+    
+    if ($ownProfile) {
+      echo "<a class='btn btn-primary' href='editUserPage.php' role='button'>Edit Details</a>";
     }
+    
+    echo "<div class='col-lg-1'>";
+    
+    if ($ownProfile) {
+      echo "<a class='btn btn-primary' href='Admin.php' role='button'>Manage Recipe Suggestions</a>";
+    } else {
+      echo "<div class='col-lg-1'></div>";
+    }
+
     echo "</div>";
     echo "</div>";
     
@@ -45,31 +59,55 @@
     echo "<div class='col-lg-1'></div>";
     echo "<div class='panel panel-default'>";
     echo "<div class='panel-head'>";
-    echo "<h3>  About $userProf->username: </h3>";
+    echo "<h3>  About User ".$_SESSION['user']->username.": </h3>";
     echo "</div>";
     echo "<div class='panel-body'>";
     echo "<p>";
-    echo "Name: $userProf->firstName $userProf->lastName.";
+    echo "Name:".$_SESSION['user']->firstname." ".$_SESSION['user']->lastname;
     echo"</p>";
+    echo "<p>";
+    echo "Email:".$_SESSION['user']->email."";
+    echo "<p>";
+    echo "Admin? ".$_SESSION['user']->admin;
+    echo "</p>";
     echo "</div>";
     echo "<div class='col-lg-1'></div>";
     echo "</div>";
     
     //Deals with the part of the page responsible for showing the recipe reviews a user has made.
     echo "<div class='container'>";
-    echo "<div class='row'>";
-    echo "<div class='col-lg-1'></div>";
-    echo "<div class='panel panel-default'>";
-    echo "<div class='panel-head'>"; 
-    echo "<h3> Reviews by $user: </h3>";
-    echo "</div>";
-    echo "<div class='panel-body'>";
-    echo "<p>";
-    echo "</p>";
-    echo "</div>";
-    echo "</div>";
-    echo "</div>";
-  }
+      echo "<div class='row'>";
+      echo "<div class='col-lg-1'></div>";
+      echo "<div class='panel panel-default'>";
+      echo "<div class='panel-head'>"; 
+      echo "<h3> Reviews by :".$_SESSION['user']->username." </h3>";
+      echo "</div>";
+      echo "<div class='panel-body'>";
+      try {
+        $db = new DBHandler();
+        $pdo = $db->getInstance();
+        
+        $getResults = $pdo->prepare("select * from reviews where userUsername =:username");
+        $getResults->bindValue(':username', $_SESSION['user']->username);
+        $results = $getResults->execute();        
+        while($review = $results->fetch()) {
+          echo "<div class='panel panel-default'>";
+          echo "<div class='panel-header'>".$review['recipeName']."</div>";
+          echo "<div class='panel-body'>";
+          echo "<p> Rated ";
+          for ($i = 0; $i < $rating; $i++) {
+            echo "<span class='glyphicon glyphicon-star'>";
+          }
+          echo "</p>"  ;                                                
+          echo "</div>";                              
+          echo "</div>";
+        }
+      } catch (PDOException $e) {
+        
+      }
+      echo "</div>";
+      echo "</div>";
+      echo "</div>";
   
   //Displays the corresponding page if the user passed to the page does not exist.
   function displayMissingProf() {
