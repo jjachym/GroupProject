@@ -10,7 +10,6 @@
 <html>
   
   <head>
-    <iframe src="Master.html" width = "100%" height = "72" style="border:none;"></iframe>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
