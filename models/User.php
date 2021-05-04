@@ -91,6 +91,7 @@
                     $this->firstName = $row['userFirstName'];
                     $this->lastName = $row['userLastName'];
                     $this->id = $row['userID'];
+                    $this->admin = $row['admin'];
                 }else{
                     return false;
                 }
@@ -255,7 +256,7 @@
             return $nullMatrix;
         }
 
-        public function get_user_ratings(){
+        public function get_user_ratings($username){
             try{
                 
                 $db = new DBHandler();
@@ -263,8 +264,8 @@
 
                 $recipes = array();
                 
-                $getRecipes = $pdo->prepare("SELECT * FROM userRatings");
-                //$getRecipes->bindValue(':username', $this->username, PDO::PARAM_STR);
+                $getRecipes = $pdo->prepare("SELECT * FROM userRatings where userUsername=:username");
+                $getRecipes->bindValue(':username', $this->username, PDO::PARAM_STR);
                 
                 $getRecipes->execute();
 
@@ -273,9 +274,7 @@
                     $recipe = new Recipe();
                     $recipe->findRecipe($entry['recipeName']);
 
-                    $recipeAndRating = [$recipe,$entry['rating']];
-
-                    array_push($recipes,$recipeAndRating);
+                    array_push($recipes,$recipe);
                 }
 
                 

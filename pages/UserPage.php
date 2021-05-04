@@ -6,6 +6,12 @@
   include 'Master.php';
 
   session_start();
+  if (isset($_POST['recipeRating'])){
+    //change when the details page has been made
+    $_SESSION['recipeDetail'] = $_POST['recipeRating'];
+    header("Location: RecipeDetail.php");
+    return;
+  }
 
 ?>
 
@@ -28,7 +34,7 @@
 <?php
 
   function buildPage() {
-    if ($_SESSION['user'] == $userProf) {
+    if ($_SESSION['user']->admin($_SESSION['user'])) {
       $ownProfile = true;
     }
     
@@ -82,28 +88,27 @@
       echo "<div class='col-lg-1'></div>";
       echo "<div class='panel panel-default'>";
       echo "<div class='panel-head'>"; 
-      echo "<h3> Reviews by :".$_SESSION['user']->username." </h3>";
+      echo "<h3> Reviews by : ".$_SESSION['user']->username." </h3>";
       echo "</div>";
       echo "<div class='panel-body'>";
       try {
-          foreach($_SESSION['user']->get_user_ratings() as $rating) {
-            echo "<div class='panel panel-default'>";
-            echo "<div class='panel-header'>".$rating[0]."</div>";
-            echo "<div class='panel-body'>";
-            echo "<p> Rated ";
-            for ($i = 0; $i < $rating[1]; $i++) {
-              echo "<span class='glyphicon glyphicon-star'>";
-            }
-            echo "</p>"  ;                                                
-            echo "</div>";                              
-            echo "</div>";
+        $arrayPosition = 0;
+        echo'<form method="post">';
+            $recipes = $_SESSION['user']->get_user_ratings($_SESSION['user']->username);
+            foreach ($recipes as $r){
+              echo "<hr>";
+              echo"<button type='submit' name='recipeRating' value='$arrayPosition'>Title: $r->title | Description: $r->description </button>";
+              echo"<br>";
+              $arrayPosition++;
           }
+        echo'</form>';
       } catch (PDOException $e) {
         
       }
       echo "</div>";
       echo "</div>";
       echo "</div>";
+    }
   
   //Displays the corresponding page if the user passed to the page does not exist.
   function displayMissingProf() {
