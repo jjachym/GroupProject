@@ -11,10 +11,12 @@
 
 <body>
 <?php
+  //Admin is used to approve recipe suggestions created by the addRecipe.php form.
   require_once '../models/DBHandler.php';
   include '../models/ErrorHandler.php';
   include '../models/Recipe.php';
   
+  //Handles button clicks
   function buttonHandle() {
     if ($state == add) {
       $addRecipe = new Recipe();
@@ -38,8 +40,28 @@
   $getSuggestions = $pdo->query("select * from Suggestions LIMIT 10");
   $suggestionsReturned = $getSuggestions->rowCount();
   
-  if (isset($_POST['button-accept']) || isset($_POST['button-remove'])) {
-    
+   if (isset($_POST['button-accept'])) {
+    $state = $_POST['button-accept'];
+  }
+  
+  if (!empty($_POST['name'])) {
+    $name = $_POST['name'];
+  }
+  
+  if (!empty($_POST['ingredient'])) {
+    $ingredients = $_POST['ingredient'];
+  }
+  
+  if (!empty($_POST['description'])) {
+    $description = $_POST['description'];
+  }
+  
+  if (!empty($_POST['instruction'])) {
+    $instruction = $_POST['instruction'];
+  }
+  
+  if (!empty($_POST['tags'])) {
+    $tags = $_POST['tags'];
   }
   
   if ($suggestionsReturned == 0) {
@@ -54,33 +76,33 @@
     echo "</div>";
   } 
   
-  $i = 0;
-  while ($suggestion = $getSuggestions->fetch()) {
-    echo "<div class='container'>";
-    echo "<h2>Recipe Name: $suggestion[suggestionName]</h2>";
-    echo "<div class='panel panel-default'>";
-    echo "<div class='panel-body'>";
-    echo "<p>";
-    echo "Ingredients: $suggestion[suggestionIngredients]\n";
-    echo "</p>";
-    echo "<p>";
-    echo "Description: $suggestion[suggestionDescription]\n";
-    echo "</p>";
-    echo "<p>";
-    echo "Instructions: $suggestion[suggestionInstructions]\n";
-    echo "</p>";
-    echo "<p>";
-    echo "Tags: $suggestion[suggestionTags]\n";
-    echo "</p>";
-    echo "</div>";
-    echo "<div class='panel-footer'>";
-    echo "<div class='btn btn-success' id='button-accept' href='Admin.php'><span class='glyphicon glyphicon-ok'></div>";
-    echo "<div class='btn btn-danger' id='button-remove' href='Admin.php'><span class='glyphicon glyphicon-remove'></div>";
-    echo "</div>";
-    echo "</div>";
-    echo "</div>";
-    $i++;
+  if ($state == 'add' || $state == 'remove') {
+    buttonHandle();
   }
+  
+  echo "<div class='container'>";
+  echo "<h2>Recipe Name: $suggestion[suggestionName]</h2>";
+  echo "<div class='panel panel-default'>";
+  echo "<div class='panel-body'>";
+  echo "<p>";
+  echo "Ingredients: $suggestion[suggestionIngredients]\n";
+  echo "</p>";
+  echo "<p>";
+  echo "Description: $suggestion[suggestionDescription]\n";
+  echo "</p>";
+  echo "<p>";
+  echo "Instructions: $suggestion[suggestionInstructions]\n";
+  echo "</p>";
+  echo "<p>";
+  echo "Tags: $suggestion[suggestionTags]\n";
+  echo "</p>";
+  echo "</div>";
+  echo "<div class='panel-footer'>";
+  echo "<button type='submit' name='button-accept' value='add' class='btn btn-success'><span class='glyphicon glyphicon-ok'> Approve</button>";
+  echo "<button type='submit' name='button-accept' value='remove' class='btn btn-danger'><span class='glyphicon glyphicon-remove'> Reject</button>";
+  echo "</div>";
+  echo "</div>";
+  echo "</div>";
 ?>
 </body>
 </html>
