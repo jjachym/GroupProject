@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 
 <head>
-  <iframe src="Master.php" width = "100%" height = "72" style="border:none;"></iframe>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -14,67 +13,39 @@
   require_once '../models/DBHandler.php';
   include '../models/ErrorHandler.php';
   include '../models/Recipe.php';
+  include 'Master.php';
   
   $e = new DBHandler();
   $pdo = $e->getInstance();
   
-  function buttonHandle() {
-    $pdo->beginTransaction();
-  
-    if ($state == add) {
-      $addRecipe = new Recipe();
-      $addRecipe->__construct($_POST['name'], $_POST['ingredient'], $_POST['description'], $_POST['instruction'], $_POST['tags'], 3);
-      $addRecipe->save();
-    }
-    try {
-      $removeSuggestion = $pdo->prepare("delete from suggestions where suggestionName =:name, suggestionIngredients =:ing, suggestionDescription =:desc, suggestionInstructions =:inst, suggestionTags=:tags");
-      
-      $removeSuggestion->bindValue(':name',$_POST['name']);
-      $removeSuggestion->bindValue(':ing',$_POST['ingredient']);
-      $removeSuggestion->bindValue(':desc',$_POST['description']);
-      $removeSuggestion->bindValue(':inst',$_POST['instruction']);
-      $removeSuggestion->bindValue(':tags',$_POST['tags']);
-      $removeSuggestion->execute();
-      $pdo->commit();
-    } catch (PDOException $e){
-      $pdo->rollback();
-    }
-  } 
-
-
   echo "<div class = 'col-lg-1'></div>";
   echo "<a href='UserPage.php' class='btn btn-primary'>Back to User Page</a>";
-            
-  $getSuggestions = $pdo->query("select * from Suggestions LIMIT 10");
-  $suggestionsReturned = $getSuggestions->rowCount();
   
   if (isset($_POST['button-accept'])) {
-    $state = $_POST['button-accept'];
+    if ($_POST['button-accept'] == 'add' or $_POST['button-accept'] == 'remove') {
+      $pdo->beginTransaction();
+      
+      if ($_POST['button-accept'] == 'add') {
+        $newRecipe = new Recipe();
+        $newRecipe->__construct($_POST['name'],$_POST['ingredient'],$_POST['description'],$_POST['instruction'],$_POST['tags'],3);
+        $newRecipe->save(); 
+      }
+      
+      try {
+        $delete = $pdo->prepare("delete from Suggestions where suggestionName = ? and suggestionIngredients = ? and suggestionDescription = ? and suggestionInstructions = ? and suggestionTags = ?");
+        $delete->execute([$_POST['name'],$_POST['ingredient'],$_POST['description'],$_POST['instruction'],$_POST['tags']]);
+      } catch (PDOException $e) {
+        $_SESSION['error'][] = "DB Error";
+        $pdo->rollBack();
+      }
+      
+      $pdo->commit();
+
+    }
   }
-  
-  if (!empty($_POST['name'])) {
-    $name = $_POST['name'];
-  }
-  
-  if (!empty($_POST['ingredient'])) {
-    $ingredients = $_POST['ingredient'];
-  }
-  
-  if (!empty($_POST['description'])) {
-    $description = $_POST['description'];
-  }
-  
-  if (!empty($_POST['instruction'])) {
-    $instruction = $_POST['instruction'];
-  }
-  
-  if (!empty($_POST['tags'])) {
-    $tags = $_POST['tags'];
-  }
-  
-  if ($state == 'add' || $state == 'remove') {
-    buttonHandle();
-  }
+              
+  $getSuggestions = $pdo->query("select * from Suggestions LIMIT 10");
+  $suggestionsReturned = $getSuggestions->rowCount();
   
   if ($suggestionsReturned == 0) {
     echo "<div class='panel panel-default'>";
