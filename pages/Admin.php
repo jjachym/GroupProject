@@ -1,3 +1,10 @@
+<?php
+  if (!$_SESSION['user']->admin) {
+    $_SESSION['errors'][] = "Unauthorised account attempting to access Admin page."
+    header("Location: UserPage.php");
+  }
+?>
+
 <!DOCTYPE html>
 
 <head>
