@@ -11,9 +11,9 @@
 
 <body>
 <?php
-  require_once 'DBHandler.php';
-  include 'ErrorHandler.php';
-  include 'Recipe.php';
+  require_once '../models/DBHandler.php';
+  include '../models/ErrorHandler.php';
+  include '../models/Recipe.php';
   
   $e = new DBHandler();
   $pdo = $e->getInstance();
