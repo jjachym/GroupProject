@@ -86,24 +86,18 @@
       echo "</div>";
       echo "<div class='panel-body'>";
       try {
-        $db = new DBHandler();
-        $pdo = $db->getInstance();
-        
-        $getResults = $pdo->prepare("select * from reviews where userUsername =:username");
-        $getResults->bindValue(':username', $_SESSION['user']->username);
-        $results = $getResults->execute();        
-        while($review = $results->fetch()) {
-          echo "<div class='panel panel-default'>";
-          echo "<div class='panel-header'>".$review['recipeName']."</div>";
-          echo "<div class='panel-body'>";
-          echo "<p> Rated ";
-          for ($i = 0; $i < $rating; $i++) {
-            echo "<span class='glyphicon glyphicon-star'>";
+          foreach($_SESSION['user']->get_user_ratings() as $rating) {
+            echo "<div class='panel panel-default'>";
+            echo "<div class='panel-header'>".$rating[0]."</div>";
+            echo "<div class='panel-body'>";
+            echo "<p> Rated ";
+            for ($i = 0; $i < $rating[1]; $i++) {
+              echo "<span class='glyphicon glyphicon-star'>";
+            }
+            echo "</p>"  ;                                                
+            echo "</div>";                              
+            echo "</div>";
           }
-          echo "</p>"  ;                                                
-          echo "</div>";                              
-          echo "</div>";
-        }
       } catch (PDOException $e) {
         
       }
