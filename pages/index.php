@@ -1,9 +1,15 @@
+<?php
+
+    require_once '../models/User.php';
+    include 'Master.php';
+    include '../models/ErrorHandler.php';
+
+?>
+
 <!DOCTYPE html>
 <html>
 
-<body>
-    <iframe src="Master.html" width = "100%" height = "72" style="border:none;"></iframe>
-    
+<body>    
     <div>
         <h1>Welcome to our site!</h1>
     </div>

@@ -28,7 +28,7 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li><a href="../index.php" style = "color: white;">Home</a></li>
+        <li><a href="index.php" style = "color: white;">Home</a></li>
         <li><a href="SearchRecipes.php" style = "color: white;">Search Recipe</a></li>
         <li><a href="GetRecommendations.php" style = "color: white;">Get Recommendation</a></li>
         <li><a href="AddRecipe.php" style = "color: white;">Add Recipe</a></li>

@@ -1,10 +1,64 @@
 <?php
     require_once '../models/User.php';
+    require_once '../models/Recipe.php';
     include 'Master.php';
     include '../models/ErrorHandler.php';
 
     session_start();
 
+    if (!isset($_SESSION['user'])) {
+        errorHandler("Please log in!");
+        header("Location: Login.php");
+        return;
+    }
+
+    function parse_ingredients($ingredients){
+        $ingredientsArray = array();
+        
+        $cleanIngredients = preg_replace('/[^A-Za-z0-9, "]/', '', $ingredients);
+  
+        $length = strlen($cleanIngredients);
+        $active = false;
+  
+        for ($i=0; $i < $length; $i++) { 
+            if ($cleanIngredients[$i] == '"') {
+                if($active){
+                  if (strlen($substr) > 1) {
+                      array_push($ingredientsArray,$substr);
+                  }
+                  $active = false;
+                }else{
+                  $substr = "";
+                  $active = true;
+                }
+            }else{
+              $substr .= $cleanIngredients[$i];
+            }
+  
+        }
+  
+        return $ingredientsArray;
+  
+    }
+
+    $user = $_SESSION['user'];
+
+    $preds = $user->predict();
+
+    if ($preds == false) {
+        errorHandler("Please rate at least 1 recipe!");
+        header("Location: SearchRecipes.php");
+        return;
+    }else{
+        $recipe1 = new Recipe();
+        $recipe1->findRecipe($preds[0]);
+    
+        $recipe2 = new Recipe();
+        $recipe2->findRecipe($preds[1]);
+    
+        $recipe3 = new Recipe();
+        $recipe3->findRecipe($preds[2]);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -47,14 +101,6 @@
             margin-bottom: 20px;
         }
         }
-        
-        /* Style the counter cards */
-        .card {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-        padding: 16px;
-        text-align: center;
-        background-color: #f1f1f1;
-        }
         </style>
     </head>
 
@@ -67,38 +113,79 @@
             <p>We do not need any extra information from you, below are your top 3 recipe recommendations!</p>
         </hr>
 
-        <!--RECIPE NAME IS WHERE YOU SHOULD PUT NAME OF THE RECIPE-->
-        <!--RECIPE INFO IS WHERE THE VARIOUS RECIPE SPECIFIC DETAILS WILL BE DISPLAYED-->
-        <div class="row">
-        <div class="column">
-            <div class="card">
-            <h3>Recipe Name 1</h3>
-            <p>Description:</p>
-            <p>Recipe Ingridents:</p>
-            <p>Instructinos:</p>
-            <p>Tag:</p>
+        <div class="container">
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title"><?php echo $recipe1->title; ?></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><small>Average Rating: <?php echo number_format($recipe1->averageRating,2); ?>☆</small></h6>
+                    <hr>
+                    <p class="card-text"><h5>Description</h5><?php echo $recipe1->description;?></p>
+                    <hr>
+                    <p class="card-text">
+                    <h5>Ingredients</h5>
+                    <?php 
+                        echo "<ul>";
+                        foreach (parse_ingredients($recipe1->ingredients) as $ingredient) {
+                            echo "<li>$ingredient</li>";
+                        }
+                        echo "</ul>";
+                    ?>
+                    </p>
+                    <hr>
+                    <p class="card-text"><h5>Instructions</h5><?php echo $recipe1->instructions;?></p>
+                    <hr>
+                </div>
             </div>
-        </div>
 
-        <div class="column">
-            <div class="card">
-            <h3>Recipe Name 2</h3>
-            <p>Description:</p>
-            <p>Recipe Ingridents:</p>
-            <p>Instructinos:</p>
-            <p>Tag:</p>
+            <br>
+
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title"><?php echo $recipe2->title; ?></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><small>Average Rating: <?php echo number_format($recipe2->averageRating,2); ?>☆</small></h6>
+                    <hr>
+                    <p class="card-text"><h5>Description</h5><?php echo $recipe2->description;?></p>
+                    <hr>
+                    <p class="card-text">
+                    <h5>Ingredients</h5>
+                    <?php 
+                        echo "<ul>";
+                        foreach (parse_ingredients($recipe2->ingredients) as $ingredient) {
+                            echo "<li>$ingredient</li>";
+                        }
+                        echo "</ul>";
+                    ?>
+                    </p>
+                    <hr>
+                    <p class="card-text"><h5>Instructions</h5><?php echo $recipe2->instructions;?></p>
+                    <hr>
+                </div>
             </div>
-        </div>
-        
-        <div class="column">
-            <div class="card">
-            <h3>Recipe Name 3</h3>
-            <p>Description:</p>
-            <p>Recipe Ingridents:</p>
-            <p>Instructinos:</p>
-            <p>Tag:</p>
+
+            <br>
+
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title"><?php echo $recipe3->title; ?></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><small>Average Rating: <?php echo number_format($recipe3->averageRating,2); ?>☆</small></h6>
+                    <hr>
+                    <p class="card-text"><h5>Description</h5><?php echo $recipe3->description;?></p>
+                    <hr>
+                    <p class="card-text">
+                    <h5>Ingredients</h5>
+                    <?php 
+                        echo "<ul>";
+                        foreach (parse_ingredients($recipe3->ingredients) as $ingredient) {
+                            echo "<li>$ingredient</li>";
+                        }
+                        echo "</ul>";
+                    ?>
+                    </p>
+                    <hr>
+                    <p class="card-text"><h5>Instructions</h5><?php echo $recipe3->instructions;?></p>
+                    <hr>
+                </div>
             </div>
-        </div>
         </div>
  
     </body>

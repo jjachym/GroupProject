@@ -177,84 +177,38 @@
             }
         }
 
-        private function getNullMatrix($recipes){
-            $nullMatrix = array();
-            
-            foreach ($recipes as $recipe) {
-                
-                //Parse ingredients into an array
-                
-                $ingredientsArray = array();
-                
-                $cleanIngredients = preg_replace('/[^A-Za-z "]/', '', $recipe->ingredients);
-                
-                $length = strlen($cleanIngredients);
-                $active = false;
-                
-                for ($i=0; $i < $length; $i++) { 
-                    if ($cleanIngredients[$i] == '"') {
-                        if($active){
-                            if (strlen($substr) > 1) {
-                                array_push($ingredientsArray,$substr);
-                            }
-                            $active = false;
-                        }else{
-                            $substr = "";
-                            $active = true;
-                        }
-                    }else{
-                        $substr .= $cleanIngredients[$i];
-                    }
+        private function get_ingredients_array($recipe){
+
+            $cleanInstructions = preg_replace("/[^A-Za-z0-9 ]/", '', $recipe->instructions);
+
+            $words = explode(" ",$cleanInstructions);
+            $cleanedWords = [];
+
+            foreach ($words as $word) {
+                if (!isset($cleanedWords[strtolower($word)])) {
+                    $cleanedWords[strtolower($word)] = 1;
+                }else{
+                    $cleanedWords[strtolower($word)]++;
                 }
-                
-                //Build large vector containing all possible ingredients
-                
-                foreach ($ingredientsArray as $ingredient) {
-                    $lowerIngredient = strtolower($ingredient);
-                    $nullMatrix[$lowerIngredient] = 0;
-                }
-                
             }
 
-            return $nullMatrix;
+            return $cleanedWords;
+        }
+
+        private function similarity($recipeA,$recipeB){
+
+            $s = 0;
+
+            foreach ($recipeA as $key => $val) {
+                if (isset($recipeB[$key])) {
+                    $s+= $val + $recipeB[$key];
+                }
+            }
+
+            return $s;
         }
         
-        private function getRecipeMatrix($recipe,$nullMatrix){
-            
-            //Parse ingredients into an array
-                
-            $ingredientsArray = array();
-                
-            $cleanIngredients = preg_replace('/[^A-Za-z "]/', '', $recipe->ingredients);
-            
-            $length = strlen($cleanIngredients);
-            $active = false;
-            
-            for ($i=0; $i < $length; $i++) { 
-                if ($cleanIngredients[$i] == '"') {
-                    if($active){
-                        if (strlen($substr) > 1) {
-                            array_push($ingredientsArray,$substr);
-                        }
-                        $active = false;
-                    }else{
-                        $substr = "";
-                        $active = true;
-                    }
-                }else{
-                    $substr .= $cleanIngredients[$i];
-                }
-            }
-            
-            //Build large vector containing all possible ingredients
-            
-            foreach ($ingredientsArray as $ingredient) {
-                $lowerIngredient = strtolower($ingredient);
-                $nullMatrix[$lowerIngredient] = 1;
-            }
-
-            return $nullMatrix;
-        }
+        
 
         public function get_user_ratings($username){
             try{
@@ -274,7 +228,9 @@
                     $recipe = new Recipe();
                     $recipe->findRecipe($entry['recipeName']);
 
-                    array_push($recipes,$recipe);
+                    $recipeAndRating = [$recipe,$entry['rating']];
+
+                    array_push($recipes,$recipeAndRating);
                 }
 
                 
@@ -287,11 +243,56 @@
         
         public function predict(){
             
-            
+            $userRatedRecipes = $this->get_user_ratings($this->username);
+            $highestRating = 0;
 
-            return true;
+            if (!isset($userRatedRecipes[0])) {
+                return false;
+            }
+
+            foreach ($userRatedRecipes as $r) {
+                if ($r[1] > $highestRating) {
+                    $highestRatedRecipe = $r[0];
+                }
+            }
+
+            $highestIngList = $this->get_ingredients_array($highestRatedRecipe);
+
+            $allRecipes = Recipe::fetchAll();
+
+            $allRecipeIngredients = [];
+
+            $s = 0;
+
+            $mostSimilar = [];
+            $mostSimilarVals = [0,0,0];
+
+            foreach ($allRecipes as $recipe) {
+                $ingList = $this->get_ingredients_array($recipe);
+
+                $similarity = $this->similarity($highestIngList,$ingList);
+
+                if ($similarity >= $s && $recipe->title != $highestRatedRecipe->title) {
+                    
+                    //find pos of insert
+
+                    for ($i=0; $i < 3; $i++) { 
+                        if ($similarity > $mostSimilarVals[$i]) {
+                            $pos = $i;
+                            break;
+                        }
+                    }
+
+                    array_splice($mostSimilarVals,$pos,0,$similarity);
+                    array_splice($mostSimilar,$pos,0,$recipe->title);
+
+                    $s = $mostSimilarVals[2];
+                }
+
+            }
+
+            return $mostSimilar;
         }
-        
         
         
     }
